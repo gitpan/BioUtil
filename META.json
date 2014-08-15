@@ -1,5 +1,5 @@
 {
-   "abstract" : "My Bioinformatics Utilities!",
+   "abstract" : "Bioinformatics Utilities!",
    "author" : [
       "Wei Shen <shenwei356@gmail.com>"
    ],
@@ -37,5 +37,5 @@
       }
    },
    "release_status" : "stable",
-   "version" : "2014.0814"
+   "version" : "2014.0815"
 }
