@@ -42,11 +42,11 @@ hoping it would be helpful.
 
 =head1 VERSION
 
-Version 2014.1115
+Version 2014.1116
 
 =cut
 
-our $VERSION = 2014.1115;
+our $VERSION = 2014.1116;
 
 =head1 EXPORT
 
@@ -88,7 +88,10 @@ A boolean argument is optional. If set as "true", "return" ("\r") and
 
 Example:
 
-   # my $next_seq = FastaReader("test.fa", 1);
+   # $not_trim = 1;
+   # my $next_seq = FastaReader("test.fa", $not_trim);
+   
+   # my $next_seq = FastaReader('STDIN');
    my $next_seq = FastaReader("test.fa");
 
    while ( my $fa = &$next_seq() ) {
@@ -106,20 +109,27 @@ sub FastaReader {
     my ( $header,      $seq )        = ( '', '' ); # current header and seq
     my $finished = 0;
 
-    # must use local variable!
-    open my $fh, "<", $file
-        or die "fail to open file: $file!\n";
+    my $fh       = undef;
+    my $is_stdin = 0;
+
+    if ( $file eq 'STDIN' ) {
+        $fh       = *STDIN;
+        $is_stdin = 1;
+    }
+    else {
+        open $fh, "<", $file
+            or die "fail to open file: $file!\n";
+    }
 
     return sub {
-
-        if ($finished) {                           # end of file
+        if ($finished) {    # end of file
             return undef;
         }
 
         while (<$fh>) {
-            s/^\s+//;    # remove the space at the front of line
+            s/^\s+//;       # remove the space at the front of line
 
-            if (/^>(.*)/) {    # header line
+            if (/^>(.*)/) { # header line
                 ( $header, $last_header ) = ( $last_header, $1 );
                 ( $seq,    $seq_buffer )  = ( $seq_buffer,  '' );
 
@@ -133,7 +143,7 @@ sub FastaReader {
                 $seq_buffer .= $_;    # append seq
             }
         }
-        close $fh;
+        close $fh unless $is_stdin;
         $finished = 1;
 
         # last record
