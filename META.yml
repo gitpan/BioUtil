@@ -4,10 +4,8 @@ author:
   - 'Wei Shen <shenwei356@gmail.com>'
 build_requires:
   Test::More: 0
-configure_requires:
-  ExtUtils::MakeMaker: 0
 dynamic_config: 1
-generated_by: 'ExtUtils::MakeMaker version 6.72, CPAN::Meta::Converter version 2.132140'
+generated_by: 'ExtUtils::MakeMaker version 6.84, CPAN::Meta::Converter version 2.132830'
 license: unknown
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -19,4 +17,6 @@ no_index:
     - inc
 requires:
   perl: 5.006
-version: 2014.0815
+resources:
+  repository: https://github.com/shenwei356/BioUtil.git
+version: 2014.1115

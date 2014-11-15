@@ -4,20 +4,22 @@ require Exporter;
 @ISA    = (Exporter);
 @EXPORT = qw(
     FastaReader
-    read_sequence_from_fasta_file
-    write_sequence_to_fasta_file
+    read_sequence_from_fasta_file 
+    write_sequence_to_fasta_file 
     format_seq
 
-    validate_sequence
-    revcom
-    base_content
-    dna2peptide
-    codon2aa
+    validate_sequence 
+    revcom 
+    base_content 
+    degenerate_seq_to_regexp
+    degenerate_seq_match_sites
+    dna2peptide 
+    codon2aa 
     generate_random_seqence
 
-    shuffle_sequences
-    rename_fasta_header
-    clean_fasta_header
+    shuffle_sequences 
+    rename_fasta_header 
+    clean_fasta_header 
 );
 
 use vars qw($VERSION);
@@ -40,11 +42,11 @@ hoping it would be helpful.
 
 =head1 VERSION
 
-Version 2014.0814
+Version 2014.1115
 
 =cut
 
-our $VERSION = 2014.0814;
+our $VERSION = 2014.1115;
 
 =head1 EXPORT
 
@@ -56,6 +58,8 @@ our $VERSION = 2014.0814;
     validate_sequence 
     revcom 
     base_content 
+    degenerate_seq_to_regexp
+    degenerate_seq_match_sites
     dna2peptide 
     codon2aa 
     generate_random_seqence
@@ -102,7 +106,8 @@ sub FastaReader {
     my ( $header,      $seq )        = ( '', '' ); # current header and seq
     my $finished = 0;
 
-    open FH, "<", $file
+    # must use local variable!
+    open my $fh, "<", $file
         or die "fail to open file: $file!\n";
 
     return sub {
@@ -111,7 +116,7 @@ sub FastaReader {
             return undef;
         }
 
-        while (<FH>) {
+        while (<$fh>) {
             s/^\s+//;    # remove the space at the front of line
 
             if (/^>(.*)/) {    # header line
@@ -128,7 +133,7 @@ sub FastaReader {
                 $seq_buffer .= $_;    # append seq
             }
         }
-        close FH;
+        close $fh;
         $finished = 1;
 
         # last record
@@ -278,6 +283,57 @@ sub base_content {
     return sprintf "%.4f", $sum / length $seq;
 }
 
+=head2 degenerate_seq_to_regexp
+
+Translate degenerate sequence to regular expression
+
+=cut
+sub degenerate_seq_to_regexp {
+    my ($seq) = @_;
+    my %bases = (
+        'A' => 'A',
+        'T' => 'T',
+        'U' => 'U',
+        'C' => 'C',
+        'G' => 'G',
+        'R' => '[AG]',
+        'Y' => '[CT]',
+        'M' => '[AC]',
+        'K' => '[GT]',
+        'S' => '[CG]',
+        'W' => '[AT]',
+        'H' => '[ACT]',
+        'B' => '[CGT]',
+        'V' => '[ACG]',
+        'D' => '[AGT]',
+        'N' => '[ACGT]',
+    );
+    return join '', map { $bases{$_} } split // , $seq;
+}
+
+=head2 degenerate_seq_match_sites
+
+Find all sites matching degenerat subseq
+
+=cut
+sub degenerate_seq_match_sites {
+    my ( $r, $s ) = @_;
+
+    # original regexp length
+    my $r2 = $r;
+    $r2 =~ s/\[[^\[\]]+?\]/_/g;
+    my $len = length $r2;
+
+    my @sites = ();
+    my $pos   = -1;
+    while ( $s =~ /$r/ig ) {
+        $pos = pos $s;
+        push @sites, [ $pos - $len, $pos - 1 ];
+        pos $s = $pos + 1;
+    }
+    return \@sites;
+}
+
 =head2 dna2peptide
 
 Translate DNA sequence into a peptide
@@ -295,7 +351,7 @@ sub dna2peptide {
     return $protein;
 }
 
-=head2 dna2peptide
+=head2 codon2aa
 
 Translate a DNA 3-character codon to an amino acid
 
