@@ -19,4 +19,4 @@ requires:
   perl: 5.006
 resources:
   repository: https://github.com/shenwei356/BioUtil.git
-version: 2014.1116
+version: 2014.1202
