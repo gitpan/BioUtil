@@ -4,7 +4,7 @@
       "Wei Shen <shenwei356@gmail.com>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "ExtUtils::MakeMaker version 6.84, CPAN::Meta::Converter version 2.132830",
+   "generated_by" : "ExtUtils::MakeMaker version 6.98, CPAN::Meta::Converter version 2.142060",
    "license" : [
       "unknown"
    ],
@@ -25,6 +25,11 @@
             "Test::More" : "0"
          }
       },
+      "configure" : {
+         "requires" : {
+            "ExtUtils::MakeMaker" : "0"
+         }
+      },
       "runtime" : {
          "requires" : {
             "perl" : "5.006"
@@ -39,5 +44,5 @@
          "web" : "https://github.com/shenwei356/BioUtil"
       }
    },
-   "version" : "2014.12032"
+   "version" : "2014.1213"
 }
