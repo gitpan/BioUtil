@@ -266,8 +266,7 @@ Format sequence to readable text
 
 Example:
 
-    my $seq = {"seq1" => "acgagaggag"};
-    write_sequence_to_fasta_file($seq, "seq.fa");
+    printf ">%s\n%s", $head, format_seq($seq, 60);
 
 =cut
 
